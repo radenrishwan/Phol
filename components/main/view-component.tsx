@@ -1,6 +1,4 @@
-import { Lightbulb } from "lucide-react";
-import { ScrollArea } from "../scroll-area";
-import Empty from "../empty";
+import Empty from "../ui/empty";
 
 const htmlFormat = (body: string) =>
     `

@@ -1,6 +1,6 @@
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
-import Empty from "../empty";
+import Empty from "../ui/empty";
 
 type CodeComponentProps = {
     code: string;

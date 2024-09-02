@@ -1,24 +1,17 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import ModelComponent from "@/components/ui/main/model-component";
 import {
     ResizableHandle,
     ResizablePanel,
     ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { Switch } from "@/components/ui/switch";
-import { Textarea } from "@/components/ui/textarea";
+
 import { useRef, useEffect, useState } from "react";
-import { generateWithGemini } from "@/components/ui/main/generate-button";
-import { Input } from "@/components/ui/input";
 import NavigationBar from "@/components/ui/nav";
-import { Loader2 } from "lucide-react";
-import RightPaneComponent from "@/components/ui/main/right-pane-component";
-import { useToast } from "@/hooks/use-toast";
-import { geminiApiKeyCookie } from "@/lib/const";
-import { getCookie } from "@/components/ui/cookie";
+import LeftPaneComponent from "@/components/main/left-pane-component";
+import RightPaneComponent from "@/components/main/right-pane-component";
+import { getPrompt, initDB } from "@/lib/db";
+import { ComponentGenerate } from "@/lib/const";
 
 type View = "code" | "view";
 
@@ -30,7 +23,19 @@ export default function Home() {
     const [isLoading, setIsLoading] = useState(false);
     const [view, setView] = useState<View>("view");
 
-    const { toast } = useToast();
+    const [history, setHistory] = useState<ComponentGenerate[]>([]);
+
+    const [isDBReady, setIsDBReady] = useState(false);
+
+    useEffect(() => {
+        initDB().then(async () => {
+            setIsDBReady(true);
+
+            // get all history
+            const history = await getPrompt();
+            setHistory(history);
+        });
+    }, []);
 
     const [resultComponent, setResultComponent] = useState("");
 
@@ -42,11 +47,15 @@ export default function Home() {
 
     return (
         <>
-            <NavigationBar navRef={navRef} />
+            <NavigationBar
+                navRef={navRef}
+                isHistoryReady={isDBReady}
+                history={history}
+            />
             <main>
                 <ResizablePanelGroup direction="horizontal">
                     <ResizablePanel defaultSize={70}>
-                        <RightPaneComponent
+                        <LeftPaneComponent
                             navHeight={navHeight}
                             resultComponent={resultComponent}
                             view={view}
@@ -56,85 +65,20 @@ export default function Home() {
                     </ResizablePanel>
                     <ResizableHandle />
                     <ResizablePanel defaultSize={30}>
-                        <div className="flex flex-col h-full p-6 space-y-6">
-                            <ModelComponent />
-                            <div
-                                className="flex flex-col items-start gap-4 w-full max-w-sm"
-                                ref={fileRef}
-                            >
-                                <Label htmlFor="image">Image</Label>
-                                <Input
-                                    id="image"
-                                    type="file"
-                                    accept="image/*"
-                                />
-                            </div>
-                            <div className="flex items-center space-x-2">
-                                <Switch id="export-mode" />
-                                <Label htmlFor="export-mode">
-                                    Export function as default
-                                </Label>
-                            </div>
-                            <Textarea
-                                className="h-[8rem]"
-                                placeholder="Type your prompt here."
-                                onChange={(e) => setPrompt(e.target.value)}
-                            />
-                            <Button
-                                onClick={() => {
-                                    const geminiApiKey =
-                                        getCookie(geminiApiKeyCookie);
-
-                                    if (!geminiApiKey) {
-                                        toast({
-                                            title: "Oops, something went wrong!",
-                                            description:
-                                                "You need to set your Gemini API key in setting to use the model.",
-                                        });
-                                        return;
-                                    }
-
-                                    setIsLoading(true);
-
-                                    var resultFile: string | null = null;
-
-                                    const file = fileRef.current?.files?.[0];
-                                    if (file) {
-                                        const reader = new FileReader();
-                                        reader.onload = (e) => {
-                                            const base64 = e.target
-                                                ?.result as string;
-
-                                            resultFile = base64;
-                                        };
-                                        reader.readAsDataURL(file);
-                                    }
-
-                                    generateWithGemini(prompt, resultFile)
-                                        .then((html) => {
-                                            setResultComponent(html);
-                                            setIsLoading(false);
-                                        })
-                                        .catch((err) => {
-                                            setIsLoading(false);
-                                            toast({
-                                                title: "Oops, something went wrong!",
-                                                description: err.message,
-                                            });
-                                        });
-                                }}
-                                disabled={isLoading}
-                            >
-                                {isLoading ? (
-                                    <>
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                        Creating...
-                                    </>
-                                ) : (
-                                    "Create"
-                                )}
-                            </Button>
-                        </div>
+                        <RightPaneComponent
+                            setPrompt={setPrompt}
+                            prompt={prompt}
+                            setIsLoading={setIsLoading}
+                            setResultComponent={setResultComponent}
+                            fileRef={fileRef}
+                            isLoading={isLoading}
+                            onGenerateSuccess={() => {
+                                // update history
+                                getPrompt().then((history) => {
+                                    setHistory(history);
+                                });
+                            }}
+                        />
                     </ResizablePanel>
                 </ResizablePanelGroup>
             </main>

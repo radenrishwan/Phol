@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { geminiApiKeyCookie } from "@/lib/const";
 import { GearIcon } from "@radix-ui/react-icons";
 import { useEffect, useState } from "react";
-import { getCookie } from "../cookie";
+import { getCookie } from "../ui/cookie";
 
 export default function SettingComponent() {
     const [geminiKey, setGeminiKey] = useState("");

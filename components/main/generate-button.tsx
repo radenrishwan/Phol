@@ -1,7 +1,7 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { getCookie } from "../cookie";
 import { geminiApiKeyCookie, modelUsedCookie } from "@/lib/const";
 import { modelList } from "@/lib/model";
+import { getCookie } from "../ui/cookie";
 
 const instruction = `
     You are an expert frontend developer and UI/UX specialist. Your task is to generate a HTML CODE and Tailwind CSS. Adhere strictly to the guidelines below, and respond with only the code.

@@ -19,7 +19,7 @@ import {
 import { useEffect, useState } from "react";
 import { modelUsedCookie } from "@/lib/const";
 import { modelList } from "@/lib/model";
-import { getCookie } from "../cookie";
+import { getCookie } from "../ui/cookie";
 
 export default function ModelComponent() {
     const [open, setOpen] = useState(false);

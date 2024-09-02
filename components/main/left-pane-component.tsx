@@ -1,9 +1,9 @@
 import { CodeIcon, EyeIcon } from "lucide-react";
-import { Button } from "../button";
 import CodeComponent from "./code-component";
 import ViewComponent from "./view-component";
+import { Button } from "../ui/button";
 
-type RightPaneComponentProps = {
+type LeftPaneComponentProps = {
     view: "view" | "code";
     navHeight: number;
     resultComponent: string;
@@ -11,13 +11,13 @@ type RightPaneComponentProps = {
     loading: boolean;
 };
 
-export default function RightPaneComponent({
+export default function LeftPaneComponent({
     view,
     navHeight,
     resultComponent,
     setView,
     loading,
-}: RightPaneComponentProps) {
+}: LeftPaneComponentProps) {
     return (
         <div
             className="relative w-full p-6 overflow-auto"
