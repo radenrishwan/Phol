@@ -1,4 +1,3 @@
-import Image from "next/image";
 import {
     Card,
     CardContent,
@@ -6,31 +5,39 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import { ComponentGenerate } from "@/lib/const";
+import Link from "next/link";
+import { History } from "@/lib/db/result";
+import { htmlFormat } from "@/lib/view";
 
 type props = {
-    history: ComponentGenerate;
+    history: History;
 };
 
 export default function HistoryCard({ history }: props) {
-    // show date like dd/mm/yyyy
     const date = new Date(history.date).toLocaleDateString("en-GB");
+    const truncate = (str: string, n: number) => {
+        return str.length > n ? str.substring(0, n) + "..." : str;
+    };
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>{date}</CardTitle>
-            </CardHeader>
-            <CardContent>
-                <Image
-                    src="https://placehold.co/480x270"
-                    alt="Placeholder"
-                    className="w-full h-auto mb-4 rounded-md"
-                    height={270}
-                    width={480}
-                />
-                <CardDescription>{history.prompt}</CardDescription>
-            </CardContent>
-        </Card>
+        <Link prefetch={false} href={"/history/" + history.date}>
+            <Card>
+                <CardHeader>
+                    <CardTitle>{date}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <iframe
+                        srcDoc={htmlFormat(history.html)}
+                        className="w-full h-[30rem] mb-4 rounded-md overflow-hidden"
+                        height={270}
+                        width={480}
+                        style={{ zoom: 0.3 }}
+                    />
+                    <CardDescription>
+                        {truncate(history.prompt, 100)}
+                    </CardDescription>
+                </CardContent>
+            </Card>
+        </Link>
     );
 }

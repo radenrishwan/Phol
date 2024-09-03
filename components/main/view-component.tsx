@@ -1,20 +1,5 @@
+import { htmlFormat } from "@/lib/view";
 import Empty from "../ui/empty";
-
-const htmlFormat = (body: string) =>
-    `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tailwind CSS Example</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body>
-    ${body}
-</body>
-</html>
-`.trim();
 
 interface ViewComponentProps {
     resultComponent: string;

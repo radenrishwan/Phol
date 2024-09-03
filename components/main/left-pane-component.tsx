@@ -2,6 +2,7 @@ import { CodeIcon, EyeIcon } from "lucide-react";
 import CodeComponent from "./code-component";
 import ViewComponent from "./view-component";
 import { Button } from "../ui/button";
+import { LegacyRef } from "react";
 
 type LeftPaneComponentProps = {
     view: "view" | "code";

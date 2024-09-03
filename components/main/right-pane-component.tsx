@@ -3,13 +3,14 @@ import { Label } from "@/components/ui/label";
 import ModelComponent from "@/components/main/model-component";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { generateWithGemini } from "@/components/main/generate-button";
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
 import { geminiApiKeyCookie } from "@/lib/const";
 import { getCookie } from "@/components/ui/cookie";
 import { useToast } from "@/hooks/use-toast";
-import { savePrompt } from "@/lib/db";
+import { generateWithGemini } from "@/lib/ai/gemini";
+import { htmlInstruction } from "@/lib/ai/instruction";
+import { saveHistory } from "@/lib/db/result";
 
 type RightPaneComponentProps = {
     fileRef: React.RefObject<HTMLInputElement>;
@@ -59,12 +60,12 @@ export default function RightPaneComponent({
             reader.readAsDataURL(file);
         }
 
-        generateWithGemini(prompt, resultFile)
+        generateWithGemini(prompt, resultFile, htmlInstruction) // TODO: made it dynamic instruction later
             .then((html) => {
                 setResultComponent(html);
                 setIsLoading(false);
 
-                savePrompt({
+                saveHistory({
                     html: html,
                     date: Date.now(),
                     prompt: prompt,

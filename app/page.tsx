@@ -10,20 +10,21 @@ import { useRef, useEffect, useState } from "react";
 import NavigationBar from "@/components/ui/nav";
 import LeftPaneComponent from "@/components/main/left-pane-component";
 import RightPaneComponent from "@/components/main/right-pane-component";
-import { getPrompt, initDB } from "@/lib/db";
-import { ComponentGenerate } from "@/lib/const";
+import { getHistory, History } from "@/lib/db/result";
+import { initDB } from "@/lib/db/db";
 
 type View = "code" | "view";
 
 export default function Home() {
     const navRef = useRef<HTMLHtmlElement>(null);
     const fileRef = useRef<HTMLInputElement>(null);
+
     const [navHeight, setNavHeight] = useState(0);
     const [prompt, setPrompt] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [view, setView] = useState<View>("view");
 
-    const [history, setHistory] = useState<ComponentGenerate[]>([]);
+    const [history, setHistory] = useState<History[]>([]);
 
     const [isDBReady, setIsDBReady] = useState(false);
 
@@ -32,7 +33,7 @@ export default function Home() {
             setIsDBReady(true);
 
             // get all history
-            const history = await getPrompt();
+            const history = await getHistory();
             setHistory(history);
         });
     }, []);
@@ -74,7 +75,7 @@ export default function Home() {
                             isLoading={isLoading}
                             onGenerateSuccess={() => {
                                 // update history
-                                getPrompt().then((history) => {
+                                getHistory().then((history) => {
                                     setHistory(history);
                                 });
                             }}

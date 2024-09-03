@@ -12,16 +12,21 @@ import {
 
 import { HistoryIcon } from "lucide-react";
 import HistoryCard from "./history-card";
-import { ScrollArea } from "../ui/scroll-area";
-import { ComponentGenerate } from "@/lib/const";
+import { useState } from "react";
+import { History } from "@/lib/db/result";
 
 interface HistoryComponentProps {
-    historyList: ComponentGenerate[];
+    historyList: History[];
 }
-
 export default function HistoryComponent({
     historyList,
 }: HistoryComponentProps) {
+    const [visibleItems, setVisibleItems] = useState(6);
+
+    const loadMore = () => {
+        setVisibleItems((prevState) => prevState + 6);
+    };
+
     return (
         <Dialog>
             <DialogTrigger asChild>
@@ -29,20 +34,33 @@ export default function HistoryComponent({
                     <HistoryIcon className="mr-3" />
                 </button>
             </DialogTrigger>
-            <DialogContent className="w-full h-[80vh]">
+            <DialogContent className="min-w-[70vw] max-h-[80vh] overflow-auto">
                 <DialogHeader>
                     <DialogTitle>History</DialogTitle>
                     <DialogDescription>
                         See all components you&apos;ve generated.
                     </DialogDescription>
                 </DialogHeader>
-                <ScrollArea>
-                    <div className="flex flex-col gap-6">
-                        {historyList.map((item) => (
+                {historyList.length > 0 ? (
+                    <div className="grid grid-cols-3 gap-6 w-full">
+                        {historyList.slice(0, visibleItems).map((item) => (
                             <HistoryCard history={item} key={item.date} />
                         ))}
                     </div>
-                </ScrollArea>
+                ) : (
+                    <p className="text-muted-foreground text-sm text-center p-12">
+                        No components generated yet...
+                    </p>
+                )}
+                {historyList.length > visibleItems && (
+                    <Button
+                        onClick={loadMore}
+                        type="button"
+                        variant="secondary"
+                    >
+                        Load More
+                    </Button>
+                )}
                 <DialogFooter className="sm:justify-start">
                     <DialogClose asChild>
                         <Button type="button" variant="secondary">
